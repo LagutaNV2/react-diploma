@@ -80,16 +80,6 @@ function* fetchCategoriesSaga() {
 
 // Наблюдатели
 export function* watchMainCatalog() {
-  // yield takeLatest(
-  //   [selectCategoryAction.type,
-  //   // setSearchQueryAction.type,
-  //   performSearch.type,
-  //   loadMoreMainCatalog.type,
-  //   setSearchQueryAction.type,
-  //   ],
-  //   fetchMainCatalogSaga
-  // );
-  // yield debounce(300, fetchMainCatalogStart.type, fetchMainCatalogSaga);
   yield debounce(300, [
     setSearchQueryAction.type,
     performSearch.type,

@@ -18,11 +18,6 @@ const Header = () => {
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // const searchQuery = useSelector(
-  //   (state: RootState) => state.catalog.mainCatalog.searchQuery
-  // );
-
-
   useEffect(() => {
     const urlQuery = searchParams.get('q') || '';
     setLocalQuery(urlQuery);

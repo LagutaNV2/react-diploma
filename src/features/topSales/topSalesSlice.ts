@@ -1,19 +1,15 @@
 // src/features/topSales/topSalesSlice.ts
 import { createSlice } from '@reduxjs/toolkit';
-// import type { RootState } from '../../app/store';
 import type { TopSaleItem } from '../product/types';
-//import { useApi } from '../../hooks/useApi';
 
 type TopSalesState = {
   items: TopSaleItem[];
-  // status: 'idle' | 'loading' | 'succeeded' | 'failed';
   loading: boolean;
   error: string | null;
 };
 
 const initialState: TopSalesState = {
   items: [],
-  // status: 'idle',
   loading: false,
   error: null,
 };

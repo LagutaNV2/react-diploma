@@ -5,7 +5,6 @@ import { useEffect } from 'react';
 import type { RootState } from '../app/store';
 import Loader from '../components/Loader';
 import TopSales from '../components/TopSales';
-// import CatalogPage from '../pages/CatalogPage';
 import Categories from '../components/Categories';
 import HomePageCatalog from '../components/HomePageCatalog';
 import { fetchCategoriesStart, fetchHomeCatalogStart } from '../features/catalog/catalogSlice';
