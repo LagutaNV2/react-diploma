@@ -1,45 +1,89 @@
 // src/components/Header.tsx
-import React from 'react'
-import { NavLink } from 'react-router-dom'
-import { useState } from 'react'
-import CartIcon from './CartIcon'
+import React, { useState, useRef, useEffect } from 'react';
+import { NavLink, useNavigate, useSearchParams, useLocation } from 'react-router-dom';
+import type { RootState } from '../app/store';
+import CartIcon from './CartIcon';
+import { useDispatch, useSelector } from 'react-redux';
+import { setSearchQuery, performSearch } from '../features/catalog/catalogSlice';
 
 const Header = () => {
-  const [isSearchVisible, setIsSearchVisible] = useState(false)
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
 
-  const toggleSearch = () => {
-    setIsSearchVisible(!isSearchVisible)
-  }
+  const { searchQuery } = useSelector((state: RootState) => state.catalog.mainCatalog);
+  const [searchParams] = useSearchParams();
+  const [isSearchVisible, setIsSearchVisible] = useState(false);
+  const [localQuery, setLocalQuery] = useState('');
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  // return (
-  //   <nav className="navbar navbar-expand-lg navbar-light bg-light mb-4">
-  //     <div className="container">
-  //       <NavLink to="/" className="navbar-brand">
-  //         <img src="/src/assets/img/header-logo.png" alt="Bosa Noga" width="100" />
-  //       </NavLink>
-  //       <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-  //         <li className="nav-item">
-  //           <NavLink to="/" className="nav-link">Главная</NavLink>
-  //         </li>
-  //         <li className="nav-item">
-  //           <NavLink to="/catalog" className="nav-link">Каталог</NavLink>
-  //         </li>
-  //         <li className="nav-item">
-  //           <NavLink to="/about" className="nav-link">О магазине</NavLink>
-  //         </li>
-  //         <li className="nav-item">
-  //           <NavLink to="/contacts" className="nav-link">Контакты</NavLink>
-  //         </li>
-  //       </ul>
+  // const searchQuery = useSelector(
+  //   (state: RootState) => state.catalog.mainCatalog.searchQuery
+  // );
 
-  //       {/* Иконка корзины */}
-  //       <div className="header-controls-pics">
-  //         <div className="header-controls-pic header-controls-search"></div>
-  //         <CartIcon />
-  //       </div>
-  //     </div>
-  //   </nav>
-  // )
+
+  useEffect(() => {
+    const urlQuery = searchParams.get('q') || '';
+    setLocalQuery(urlQuery);
+    dispatch(setSearchQuery(urlQuery));
+  }, [searchParams]);
+
+  // Синхронизация при изменении Redux state
+  useEffect(() => {
+    setLocalQuery(searchQuery);
+  }, [searchQuery]);
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
+
+
+  const triggerSearchNavigation = (currentQuery: string) => {
+    const trimmedQuery = currentQuery.trim();
+    if (trimmedQuery) {
+      const newSearchParams = new URLSearchParams();
+      newSearchParams.set('q', trimmedQuery);
+
+      if (location.pathname !== '/catalog') {
+        navigate(`/catalog?${newSearchParams.toString()}`);
+      } else {
+        navigate({ search: newSearchParams.toString() }, { replace: true });
+      }
+
+      dispatch(setSearchQuery(trimmedQuery));
+      dispatch(performSearch());
+    }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setLocalQuery(value);
+
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+
+    timeoutRef.current = setTimeout(() => {
+      dispatch(setSearchQuery(value));
+      triggerSearchNavigation(value);
+    }, 1500);
+  };
+
+  const handleInputBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    triggerSearchNavigation(e.target.value);
+  };
+
+  const handleSearchToggle = () => {
+    if (isSearchVisible && localQuery.trim()) {
+      triggerSearchNavigation(localQuery);
+    }
+    setIsSearchVisible(!isSearchVisible);
+  };
+
   return (
     <header className="container">
       <div className="row">
@@ -107,14 +151,24 @@ const Header = () => {
                   }`}
                   style={{ order: 1 }} // Поле ввода слева от иконки
                 >
-                  <input className="form-control" placeholder="Поиск" style={{ outline: 'none', boxShadow: 'none' }} />
+                  <input
+                    ref={inputRef}
+                    className="form-control"
+                    type="text"
+                    placeholder="Поиск"
+                    style={{ outline: 'none', boxShadow: 'none' }}
+                    value={localQuery}
+                    onChange={handleInputChange}
+                    onBlur={handleInputBlur}
+                  />
                 </form>
 
                 {/* Иконка поиска */}
                 <div
                   data-id="search-expander"
                   className="header-controls-pic header-controls-search"
-                  onClick={toggleSearch}
+                  onClick={handleSearchToggle}
+                  style={{ cursor: 'pointer' }}
                 ></div>
 
                 {/* Иконка корзины */}

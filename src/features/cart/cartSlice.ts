@@ -1,48 +1,47 @@
 // src/features/cart/cartSlice.ts
-import { createSlice } from '@reduxjs/toolkit'
+import { createSlice } from '@reduxjs/toolkit';
+import type { CartItem } from '../product/types';
 
-// Тип данных для элемента корзины
-export type CartItem = {
-  id: number
-  title: string
-  price: number
-  count: number
-  image: string
-}
-
-// Тип состояния корзины
-export type CartState = {
+interface CartState {
   items: CartItem[]
 }
 
 const initialState: CartState = {
-  items: [],
+  items: JSON.parse(localStorage.getItem('cartItems') || '[]'),
 }
 
 const cartSlice = createSlice({
   name: 'cart',
   initialState,
   reducers: {
-    // Пока заглушка — будем расширять на следующих этапах
-    addToCart: (state, action) => {
-      const existingItemIndex = state.items.findIndex(
-        item => item.id === action.payload.id
-      )
+    addToCart: (state, action: { payload: CartItem }) => {
+      const existingItem = state.items.find(
+        item => item.id === action.payload.id && item.size === action.payload.size
+      );
 
-      if (existingItemIndex >= 0) {
-        // Увеличиваем количество, если товар уже есть
-        state.items[existingItemIndex].count += action.payload.count || 1
+      if (existingItem) {
+        existingItem.quantity += action.payload.quantity;
       } else {
-        // Добавляем товар
-        state.items.push(action.payload)
+        state.items.push(action.payload);
+      }
+      try {
+        localStorage.setItem('cartItems', JSON.stringify(state.items));
+      } catch (e) {
+        console.error('Error saving to localStorage:', e);
       }
     },
-    clearCart: state => {
-      state.items = []
+    removeFromCart: (state, action) => {
+      state.items = state.items.filter(item =>
+        !(item.id === action.payload.id && item.size === action.payload.size)
+      );
+      localStorage.setItem('cartItems', JSON.stringify(state.items));
+    },
+    clearCart: (state) => {
+      state.items = [];
+      localStorage.removeItem('cartItems');
     },
   },
-})
+});
 
-export const { addToCart, clearCart } = cartSlice.actions
-
-export default cartSlice.reducer
+export const { addToCart, removeFromCart, clearCart } = cartSlice.actions;
+export default cartSlice.reducer;

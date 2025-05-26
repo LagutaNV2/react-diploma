@@ -1,5 +1,10 @@
+/* src/index.css */
 :root {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+/* сохранение позиций каталога для мобильных устройств */
+html {
+  scroll-behavior: smooth;
 }

@@ -1,7 +1,7 @@
 // src/components/CartIcon.tsx
-import React from 'react'
-import { useSelector } from 'react-redux'
-import type { RootState } from '../app/store'
+import React from 'react';
+import { useSelector } from 'react-redux';
+import type { RootState } from '../app/store';
 
 const CartIcon = () => {
   // const itemCount = useSelector((state: RootState) => state.cart.items.length)
