@@ -186,7 +186,8 @@ input:focus {
 
 /* Top Sales */
 .top-sales {
-  min-height: 300px;
+  width: 100%;
+
 }
 
 /* Catalog */
@@ -232,18 +233,61 @@ input:focus {
   outline: none;
   box-shadow: none;
 }
-/* Унификация изображений */
-.product-card-image {
-  width: 100%;
-  height: 300px;
-  object-fit: cover;
-  object-position: center;
+/* Изображения */
+.card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
-.card-img-top {
-  height: 200px;
-  object-fit: cover;
+.card-body {
+  flex-grow: 1;
+  padding: 1rem;
 }
 
+.card-text {
+  flex-grow: 1;
+}
+.image-box {
+  flex-grow: 1;
+  /* height: 350px; */
+  height: 200px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  background-color: #f8f9fa;
+}
+.image-box img {
+  max-height: 100%;
+  max-width: 100%;
+  /* object-fit: contain; */
+  object-fit: cover;
+}
+.card-body {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+}
+
+.card-text {
+  flex-grow: 1;
+}
+
+/* хит продаж */
+.row {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.col-12, .col-md-6, .col-lg-4 {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
 /* Footer */
 .footer {
   padding: 0 25px;
@@ -351,4 +395,33 @@ h2, .h2 {
 .footer .footer-contacts-email {
   color: #727e86;
   text-decoration: none;
+}
+
+/* дополнительные уведомления */
+.toast {
+  min-width: 350px;
+  border: none;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.bg-success {
+  background-color: #28a745 !important;
+}
+
+.bg-danger {
+  background-color: #dc3545 !important;
+}
+
+.bg-primary {
+  background-color: #007bff !important;
+}
+
+.toast-header {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+.btn-close {
+  filter: invert(1);
 }

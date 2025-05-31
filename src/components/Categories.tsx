@@ -1,8 +1,7 @@
 // src/components/Categories.tsx
-import React from 'react';
 import {  useDispatch, useSelector } from 'react-redux';
 import type { RootState, AppDispatch } from '../app/store';
-import { selectCategory, fetchMainCatalogStart } from '../features/catalog/catalogSlice';
+import { selectCategory } from '../features/catalog/catalogSlice';
 
 type Props = {
   onCategorySelect?: (categoryId: number) => void;

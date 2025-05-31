@@ -1,39 +1,161 @@
 // src/pages/CartPage.tsx
-import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import type { RootState } from '../app/store';
 import { removeFromCart, clearCart } from '../features/cart/cartSlice';
-import { addToCart as addToCartAction } from '../features/cart/cartSlice';
+// import { addToCart as addToCartAction } from '../features/cart/cartSlice';
+import Loader from '../components/Loader';
+import Notification from '../components/Notification';
+
+const isBrowser = typeof window !== 'undefined' && typeof document !== 'undefined';
 
 const CartPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const cartItems = useSelector((state: RootState) => state.cart.items);
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const [phone, setPhone] = useState('');
+  const [address, setAddress] = useState('');
+
+  const [notification, setNotification] = useState<{
+      type: 'success' | 'error' | 'info';
+      message: string;
+      visible: boolean;
+    }>({ type: 'info', message: '', visible: false });
 
   // Рассчитываем общую стоимость
   const total = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
+  // Автоматическое скрытие уведомлений
+  useEffect(() => {
+    if (notification.visible) {
+      const timer = setTimeout(() => {
+        setNotification(prev => ({ ...prev, visible: false }));
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [notification.visible]);
+
+  const showNotification = (type: 'success' | 'error' | 'info', message: string) => {
+    setNotification({ type, message, visible: true });
+  };
+
   const handleRemoveItem = (itemId: number, size: string) => {
     dispatch(removeFromCart({ id: itemId, size }));
+    showNotification('info', 'Товар удален из корзины');
   };
 
   const handleCheckout = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Здесь должна быть логика оформления заказа
+    // логика оформления заказа
+
+    // Сбрасываем предыдущие уведомления
+    setNotification(prev => ({ ...prev, visible: false }));
+
+    // Валидация на клиенте
+    if (!/^\+7\d{10}$/.test(phone)) {
+      showNotification('error', 'Телефон должен быть в формате +7XXXXXXXXXX');
+      return;
+    }
+
+    if (address.trim().length < 5) {
+      showNotification('error', 'Введите корректный адрес (минимум 5 символов)');
+      return;
+    }
+
+    if (cartItems.length === 0) {
+      showNotification('error', 'Корзина пуста');
+      return;
+    }
+
+    setIsSubmitting(true);
+
     try {
       // Отправка данных на сервер
-      dispatch(removeFromCart({ id: itemId, size }));
+      const orderData = {
+        owner: {
+          phone: phone,
+          address: address
+        },
+        items: cartItems.map(item => ({
+          id: item.id,
+          price: item.price,
+          count: item.quantity
+        }))
+      };
+      const response = await fetch('http://localhost:7070/api/order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(orderData)
+      });
+
+      // Обработка успешного ответа без тела
+      if (response.status === 204) {
+        dispatch(clearCart());
+        localStorage.removeItem('cartItems');
+        navigate('/success');
+        showNotification('success', 'Заказ успешно оформлен!');
+        // navigate('/success');
+        return;
+      }
+
+      if (!response.ok) {
+        let errorMessage = 'Ошибка сервера';
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.message || errorMessage;
+        } catch (e) {
+          // Если не удалось распарсить JSON
+          errorMessage = await response.text() || errorMessage;
+        }
+        throw new Error(errorMessage);
+      }
+
       dispatch(clearCart());
-      navigate('/');
+      localStorage.removeItem('cartItems');
+      // navigate('/success');
+      showNotification('success', 'Заказ успешно оформлен!');
+
+      if (isBrowser && timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+      if (isBrowser) {
+        timeoutRef.current = setTimeout(() => {
+          navigate('/success');
+        }, 3000);
+      }
     } catch (error) {
-      // Обработка ошибки
+      let message = 'Ошибка сети';
+      if (error instanceof TypeError) {
+        message = 'Проверьте подключение к интернету';
+      } else if (error instanceof Error) {
+        message = error.message;
+      }
+
+      // Доп. специфичная обработка для CORS ошибок
+      if (error.message.includes('Failed to fetch') || error.message.includes('network')) {
+        message = 'Ошибка CORS: Проверьте настройки сервера';
+      }
+
+      showNotification('error', `Ошибка оформления: ${message}`);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
     <section className="cart">
+      {/* Компонент уведомлений */}
+      <Notification
+        type={notification.type}
+        message={notification.message}
+        visible={notification.visible}
+        onClose={() => setNotification(prev => ({ ...prev, visible: false }))}
+      />
       <h2 className="text-center">Корзина</h2>
       {cartItems.length === 0 ? (
         <p>Ваша корзина пуста</p>
@@ -76,7 +198,10 @@ const CartPage = () => {
               </tr>
             </tbody>
           </table>
-          <section className="order">
+          <section
+            className="order"
+            style={{ maxWidth: '50%', margin: '0 auto' }}
+          >
             <h2 className="text-center">Оформить заказ</h2>
             <div className="card" style={{ maxWidth: '30rem', margin: '0 auto' }}>
               <form className="card-body" onSubmit={handleCheckout}>
@@ -88,6 +213,8 @@ const CartPage = () => {
                     id="phone"
                     placeholder="+7 (XXX) XXX-XX-XX"
                     required
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
                   />
                 </div>
                 <div className="form-group">
@@ -97,6 +224,8 @@ const CartPage = () => {
                     className="form-control"
                     id="address"
                     required
+                    value={address}
+                    onChange={(e) => setAddress(e.target.value)}
                   />
                 </div>
                 <div className="form-group form-check">
@@ -115,7 +244,7 @@ const CartPage = () => {
                   className="btn btn-danger btn-block btn-lg"
                   disabled={cartItems.length === 0}
                 >
-                  Оформить
+                   {isSubmitting ? <Loader /> : 'Оформить'}
                 </button>
               </form>
             </div>

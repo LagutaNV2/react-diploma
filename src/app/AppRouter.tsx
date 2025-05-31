@@ -7,6 +7,7 @@ import ContactsPage from '../pages/ContactsPage'
 import NotFoundPage from '../pages/NotFoundPage'
 import ProductPage from '../pages/ProductPage'
 import CartPage from '../pages/CartPage';
+import SuccessPage from '../pages/SuccessPage'
 
 const AppRouter = () => {
   return (
@@ -17,6 +18,7 @@ const AppRouter = () => {
         <Route path="/cart" element={<CartPage />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/contacts" element={<ContactsPage />} />
+        <Route path="/success" element={<SuccessPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
   )

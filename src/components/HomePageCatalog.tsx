@@ -1,5 +1,5 @@
 //src/components/HomePageCatalog.tsx
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import type { RootState } from '../app/store';
 import { fetchHomeCatalogStart } from '../features/catalog/catalogSlice';
@@ -26,7 +26,7 @@ const HomePageCatalog = () => {
     <div>
       <div className="row">
         {products.map((product) => (
-          <div key={`${product.id}-home`} className="col-4">
+          <div key={`${product.id}-home`} className="col-12 col-md-6 col-lg-4 mb-4">
             <Card item={product} />
           </div>
         ))}
@@ -35,8 +35,9 @@ const HomePageCatalog = () => {
         <button
           className="btn btn-outline-primary"
           onClick={() => dispatch(loadMoreHomeCatalog())}
+          disabled={loading}
         >
-          Загрузить ещё
+           {loading ? <Loader /> : 'Загрузить ещё'}
         </button>
       )}
     </div>

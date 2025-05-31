@@ -1,8 +1,8 @@
 // src/pages/CatalogPage.tsx
-import React, { useEffect, useState, useRef }  from 'react';
+import { useEffect, useState, useRef }  from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { useDebounce } from 'use-debounce';
+// import { useDebounce } from 'use-debounce';
 import type { RootState, AppDispatch } from '../app/store';
 import {
   setSearchQuery,
@@ -15,12 +15,16 @@ import Card from '../components/Card';
 import Loader from '../components/Loader';
 import Categories from '../components/Categories';
 
+// SSR-safe проверка на выполнение в браузере
+const isBrowser = typeof window !== "undefined";
+
 const CatalogPage = () => {
   const [searchParams] = useSearchParams();
     const dispatch: AppDispatch = useDispatch();
-    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
     const [localQuery, setLocalQuery] = useState('');
     const selectedCategory = useSelector((state: RootState) => state.catalog.selectedCategory);
+    // const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     const {
       products,
@@ -49,19 +53,26 @@ const CatalogPage = () => {
       const value = e.target.value;
       setLocalQuery(value);
 
-      // Очищаем предыдущий таймер
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      // SSR-safe очистка таймаута
+      if (isBrowser && timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
 
-      // Устанавливаем новый таймер на 3 секунды
-      timeoutRef.current = setTimeout(() => {
-        dispatch(setSearchQuery(value));
-        dispatch(performSearch());
-      }, 1500);
+      // SSR-safe установка таймаута
+      if (isBrowser) {
+        timeoutRef.current = setTimeout(() => {
+          dispatch(setSearchQuery(value));
+          dispatch(performSearch());
+        }, 1500);
+      }
     };
 
     const handleSearchBlur = () => {
       // Немедленный поиск при потере фокуса
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      // SSR-safe очистка таймаута
+      if (isBrowser && timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
       dispatch(setSearchQuery(localQuery));
       dispatch(performSearch());
     };
@@ -69,7 +80,9 @@ const CatalogPage = () => {
     useEffect(() => {
       return () => {
         // Очистка при размонтировании компонента
-        if (timeoutRef.current) clearTimeout(timeoutRef.current);
+        if (isBrowser && timeoutRef.current) {
+          clearTimeout(timeoutRef.current);
+        }
       };
     }, []);
 

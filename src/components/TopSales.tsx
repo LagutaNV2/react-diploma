@@ -1,5 +1,5 @@
 // src/components/TopSales.tsx
-import React, { useEffect} from 'react';
+import { useEffect} from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchTopSalesStart } from '../features/topSales/topSalesSlice';
 import type { RootState } from '../app/store';

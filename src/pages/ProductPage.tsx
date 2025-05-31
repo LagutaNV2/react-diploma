@@ -1,5 +1,5 @@
 // src/pages/ProductPage.tsx
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
@@ -10,8 +10,6 @@ import {
   fetchProductSuccess,
   resetProductState,
   setSize,
-  incrementQuantity,
-  decrementQuantity
 } from '../features/product/productSlice';
 import { addToCart } from '../features/cart/cartSlice';
 import ErrorMessage from '../components/ErrorMessage';

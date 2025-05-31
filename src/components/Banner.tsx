@@ -1,6 +1,4 @@
 // src/components/Banner.tsx
-import React from 'react'
-
 const Banner = () => {
   return (
     <div className="banner text-center mb-4">

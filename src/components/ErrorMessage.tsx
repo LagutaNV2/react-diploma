@@ -1,6 +1,4 @@
 // src/components/ErrorMessage.tsx
-import React from 'react';
-
 type Props = {
   error: string | null;
   onRetry?: () => void;

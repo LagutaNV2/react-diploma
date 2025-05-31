@@ -1,5 +1,4 @@
 // src/components/Card.tsx
-import React from 'react';
 import { Link } from 'react-router-dom';
 import type { Product } from '../features/product/types';
 
@@ -9,12 +8,18 @@ type Props = {
 const Card = ({ item }: Props) => {
   return (
     <div className="card">
-        <img src={item.images[0]} className="card-img-top img-fluid" alt={item.title} />
+        {/* <div className="image-box" style={{ backgroundImage: `url(${item.images[0]})` }}></div> */}
+        <div className="image-box">
+          <img src={item.images[0]}
+              alt={item.title}
+              className="img-fluid" />
+        </div>
         <div className="card-body">
-            <p className="card-text">{item.title}</p>
-            <p className="card-text">{item.price} руб.</p>
-            <Link to={`/catalog/${item.id}`} className="btn btn-outline-primary">
-              Заказать
+            <h5 className="card-title">{item.title}</h5>
+            <p className="card-text">{item.price.toLocaleString()} руб.</p>
+            <Link to={`/catalog/${item.id}`}
+              className="btn btn-outline-primary mt-auto">
+                Заказать
             </Link>
         </div>
     </div>

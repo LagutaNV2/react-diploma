@@ -1,16 +1,11 @@
 // src/features/product/productSlice.ts
-import {
-  createSlice,
-  // createAsyncThunk
-} from '@reduxjs/toolkit';
-// import type { RootState } from '../../app/store';
+import { createSlice, } from '@reduxjs/toolkit';
 import type { Product } from './types';
 
 interface ProductState {
   product: Product | null;
   selectedSize: string | null;
   quantity: number;
-  // status: 'idle' | 'loading' | 'succeeded' | 'failed';
   loading: boolean;
   error: string | null;
 }
@@ -19,7 +14,6 @@ const initialState: ProductState = {
   product: null,
   selectedSize: null,
   quantity: 1,
-  // status: 'idle',
   loading: false,
   error: null,
 };

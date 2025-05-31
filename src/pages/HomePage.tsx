@@ -1,5 +1,4 @@
 // src/pages/HomePage.tsx
-import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useEffect } from 'react';
 import type { RootState } from '../app/store';

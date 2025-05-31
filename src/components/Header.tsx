@@ -1,10 +1,13 @@
 // src/components/Header.tsx
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { NavLink, useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import type { RootState } from '../app/store';
 import CartIcon from './CartIcon';
 import { useDispatch, useSelector } from 'react-redux';
 import { setSearchQuery, performSearch } from '../features/catalog/catalogSlice';
+
+// SSR-safe проверка на выполнение в браузере
+const isBrowser = typeof window !== "undefined";
 
 const Header = () => {
   const dispatch = useDispatch();
@@ -15,8 +18,9 @@ const Header = () => {
   const [searchParams] = useSearchParams();
   const [isSearchVisible, setIsSearchVisible] = useState(false);
   const [localQuery, setLocalQuery] = useState('');
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     const urlQuery = searchParams.get('q') || '';
@@ -29,10 +33,12 @@ const Header = () => {
     setLocalQuery(searchQuery);
   }, [searchQuery]);
 
+  // SSR-safe очистка таймаута
   useEffect(() => {
     return () => {
-      if (timeoutRef.current) {
+      if (isBrowser && timeoutRef.current) {
         clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
       }
     };
   }, []);
@@ -59,16 +65,25 @@ const Header = () => {
     const value = e.target.value;
     setLocalQuery(value);
 
-    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    // SSR-safe очистка таймаута
+    if (isBrowser && timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
 
-    timeoutRef.current = setTimeout(() => {
-      dispatch(setSearchQuery(value));
-      triggerSearchNavigation(value);
-    }, 1500);
+    // SSR-safe установка таймаута
+    if (isBrowser) {
+      timeoutRef.current = setTimeout(() => {
+        dispatch(setSearchQuery(value));
+        triggerSearchNavigation(value);
+      }, 1500);
+    }
   };
 
   const handleInputBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+     // SSR-safe очистка таймаута
+    if (isBrowser && timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
     triggerSearchNavigation(e.target.value);
   };
 
