@@ -9,11 +9,15 @@ import {
   fetchMainCatalogSuccess,
   fetchMainCatalogFailure,
   fetchCategoriesSuccess,
+  fetchCategoriesFailure,
   fetchHomeCatalogStart,
   fetchHomeCatalogSuccess,
   fetchHomeCatalogFailure,
   fetchCategoriesStart,
   performSearch,
+  // initCatalog,
+  // initCatalogSuccess,
+  // initCatalogFailure
 } from './catalogSlice';
 import type { Product } from '../product/types';
 
@@ -21,6 +25,7 @@ import type { Product } from '../product/types';
 function* fetchMainCatalogSaga() {
   try {
     const state = yield select(state => state.catalog);
+    const { isSearching } = state.mainCatalog;
     const { selectedCategory } = state;
     const { searchQuery, offset } = state.mainCatalog;
     const actualOffset = yield select(
@@ -48,33 +53,48 @@ function* fetchMainCatalogSaga() {
 // Сага для виджета на главной
 function* fetchHomeCatalogSaga() {
   try {
-    const state = yield select(state => state.catalog);
-    const { selectedCategory } = state;
+    const state: CatalogState = yield select(state => state.catalog);
     const { offset } = state.homeCatalog;
+
     const params = new URLSearchParams({
-      offset: state.homeCatalog.offset.toString(),
-      ...(state.selectedCategory !== 0 && { categoryId: state.selectedCategory.toString() })
+      // offset: state.homeCatalog.offset.toString(),
+      // ...(state.selectedCategory !== 0 && { categoryId: state.selectedCategory.toString() })
+      offset: offset.toString(),
+      ...(state.selectedCategory !== 0 && {
+        categoryId: state.selectedCategory.toString()
+      })
     });
 
-    const res = yield call(fetch, `http://localhost:7070/api/items?${params}`);
+    const res: Response = yield call(
+      fetch,
+      `http://localhost:7070/api/items?${params}`
+    );
+
     if (!res.ok) throw new Error('Ошибка загрузки каталога');
+
     const data: Product[] = yield call([res, 'json']);
     yield put(fetchHomeCatalogSuccess(data));
   } catch (e) {
-    yield put(fetchHomeCatalogFailure(e.message));
+    const errorMessage = e instanceof Error ? e.message : 'Unknown error';
+    yield put(fetchHomeCatalogFailure(errorMessage));
   }
 }
 
 function* fetchCategoriesSaga() {
   console.log('fetchCategoriesSaga started');
   try {
-    const res = yield call(fetch, 'http://localhost:7070/api/categories');
-    if (!res.ok) throw new Error('Ошибка загрузки категорий');
-    const data = yield call([res, 'json']);
+    const res: Response = yield call(fetch, 'http://localhost:7070/api/categories');
+
+    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+
+    const data: Category[] = yield res.json();
     yield put(fetchCategoriesSuccess([{ id: 0, title: 'Все' }, ...data]));
+    // yield put(fetchHomeCatalogStart());
+    console.log('Categories fetched successfully:', data);
   } catch (e) {
-    console.error('Error fetching categories:', e);
-    yield put(fetchCategoriesFailure(e.message));
+    const errorMessage = e instanceof Error ? e.message : 'Unknown error';
+    console.error('Error fetching categories:', errorMessage);
+    yield put(fetchCategoriesFailure(errorMessage));
   }
 }
 

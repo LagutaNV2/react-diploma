@@ -1,18 +1,34 @@
 // src/app/rootSaga.ts
-
-import { all } from 'redux-saga/effects';
+import { all, fork, call } from 'redux-saga/effects';
 import { watchFetchTopSales } from '../features/topSales/topSalesSagas';
-import { watchMainCatalog, watchHomeCatalog, watchCategories } from '../features/catalog/catalogSagas';
+import {
+  // watchCatalog,
+  watchMainCatalog,
+  watchHomeCatalog,
+  watchCategories
+} from '../features/catalog/catalogSagas';
 import { watchFetchProductDetails } from '../features/product/productSagas';
 import { watchCartChanges } from '../features/cart/cartSagas';
 
+
 export default function* rootSaga() {
   yield all([
-    watchFetchTopSales(),
-    watchHomeCatalog(),
-    watchMainCatalog(),
-    watchCategories(),
-    watchFetchProductDetails(),
-    watchCartChanges()
+    // watchFetchTopSales(),
+    // watchHomeCatalog(),
+    // watchMainCatalog(),
+    // watchCategories(),
+    // watchFetchProductDetails(),
+    // watchCartChanges()
+    // Первыми загружаем категории
+    call(watchCategories),
+
+    // Параллельно загружаем топ-продажи и каталог
+    fork(watchFetchTopSales),
+    fork(watchHomeCatalog),
+
+    // Остальные саги
+    fork(watchMainCatalog),
+    fork(watchFetchProductDetails),
+    fork(watchCartChanges)
   ]);
 }

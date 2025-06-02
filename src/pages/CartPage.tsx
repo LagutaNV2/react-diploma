@@ -4,7 +4,6 @@ import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import type { RootState } from '../app/store';
 import { removeFromCart, clearCart } from '../features/cart/cartSlice';
-// import { addToCart as addToCartAction } from '../features/cart/cartSlice';
 import Loader from '../components/Loader';
 import Notification from '../components/Notification';
 
@@ -40,6 +39,16 @@ const CartPage = () => {
     }
   }, [notification.visible]);
 
+  // Очистка таймаута навигации
+  useEffect(() => {
+  return () => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+  };
+  }, []);
+
   const showNotification = (type: 'success' | 'error' | 'info', message: string) => {
     setNotification({ type, message, visible: true });
   };
@@ -51,7 +60,7 @@ const CartPage = () => {
 
   const handleCheckout = async (e: React.FormEvent) => {
     e.preventDefault();
-    // логика оформления заказа
+    // Логика оформления заказа:
 
     // Сбрасываем предыдущие уведомления
     setNotification(prev => ({ ...prev, visible: false }));
@@ -97,9 +106,8 @@ const CartPage = () => {
       if (response.status === 204) {
         dispatch(clearCart());
         localStorage.removeItem('cartItems');
-        navigate('/success');
         showNotification('success', 'Заказ успешно оформлен!');
-        // navigate('/success');
+        navigate('/success');
         return;
       }
 
@@ -239,13 +247,26 @@ const CartPage = () => {
                     Согласен с правилами доставки
                   </label>
                 </div>
-                <button
-                  type="submit"
-                  className="btn btn-danger btn-block btn-lg"
-                  disabled={cartItems.length === 0}
-                >
-                   {isSubmitting ? <Loader /> : 'Оформить'}
-                </button>
+
+                <div className="position-relative">
+                  <button
+                    type="submit"
+                    className="btn btn-danger btn-block btn-lg"
+                    // Блокируем при отправке или пустой корзине
+                    disabled={cartItems.length === 0 || isSubmitting}
+                    // Динамически меняем прозрачность при отправке
+                    style={{ opacity: isSubmitting ? 0 : 1 }}
+                  >
+                    Оформить
+                  </button>
+
+                  {/* Лоадер поверх кнопки */}
+                  {isSubmitting && (
+                    <div className="position-absolute top-50 start-50 translate-middle">
+                      <Loader />
+                    </div>
+                  )}
+                </div>
               </form>
             </div>
           </section>

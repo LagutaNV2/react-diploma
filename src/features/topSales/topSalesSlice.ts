@@ -1,6 +1,7 @@
 // src/features/topSales/topSalesSlice.ts
 import { createSlice } from '@reduxjs/toolkit';
 import type { TopSaleItem } from '../product/types';
+import type { Product } from '../product/types';
 
 type TopSalesState = {
   items: TopSaleItem[];

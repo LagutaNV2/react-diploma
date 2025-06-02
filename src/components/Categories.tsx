@@ -33,7 +33,7 @@ const Categories = ({ onCategorySelect, isClickable = true }: Props) => {
         {categories.map(category => (
           <li key={category.id} className="nav-item">
             <button
-              className={`nav-link ${
+              className={`nav-link category ${
                 selectedCategory === category.id ? 'active' : ''
               }`}
               onClick={() => handleCategoryClick(category.id)}

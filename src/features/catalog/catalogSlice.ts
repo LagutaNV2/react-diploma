@@ -1,4 +1,4 @@
-// src/features/catalog/catalogSlice.ts
+// src/features/catalog/catalogSlice.ts  последний фрагмент кода
 import { createSlice } from '@reduxjs/toolkit';
 import type { Category } from './types';
 import type { Product } from '../product/types';
@@ -12,6 +12,7 @@ interface CatalogState {
     products: Product[];
     searchQuery: string;
     offset: number;
+    isSearching: boolean;
     loading: boolean;
     error: string | null;
     canLoadMore: boolean;
@@ -34,6 +35,7 @@ const initialState: CatalogState = {
   mainCatalog: {
     products: [],
     searchQuery: '',
+    isSearching: false,
     offset: 0,
     loading: false,
     error: null,
@@ -73,16 +75,13 @@ const catalogSlice = createSlice({
     },
     setSearchQuery: (state, action) => {
       state.mainCatalog.searchQuery = action.payload;
+      console.log('setSearchQuery:', action.payload);
       // state.mainCatalog.offset = 0;
       // state.mainCatalog.products = [];
     },
     loadMoreMainCatalog: (state) => {
       state.mainCatalog.offset += 6;
       state.mainCatalog.canLoadMore = true;
-    },
-    loadMoreHomeCatalog: (state) => {
-      state.homeCatalog.offset += 6;
-      state.homeCatalog.canLoadMore = true;
     },
     fetchMainCatalogStart: (state) => {
       state.mainCatalog.loading = true;
@@ -105,11 +104,19 @@ const catalogSlice = createSlice({
 
       state.mainCatalog.canLoadMore = action.payload.length >= 6;
       state.mainCatalog.loading = false;
+      state.mainCatalog.isSearching = false;
       state.mainCatalog.error = null;
     },
     fetchMainCatalogFailure: (state, action) => {
       state.mainCatalog.error = action.payload;
       state.mainCatalog.loading = false;
+      state.mainCatalog.isSearching = false;
+    },
+    performSearch: (state) => {
+      state.mainCatalog.offset = 0;
+      state.mainCatalog.products = [];
+      state.mainCatalog.canLoadMore = true;
+      state.mainCatalog.isSearching = true;
     },
     // Для виджета на главной
     fetchHomeCatalogStart: (state) => {
@@ -117,16 +124,30 @@ const catalogSlice = createSlice({
       state.homeCatalog.error = null;
     },
     fetchHomeCatalogSuccess: (state, action) => {
+      const newProducts = action.payload;
+
+      // Фильтрация дубликатов
+      const uniqueProducts = newProducts.filter(
+        newProduct => !state.homeCatalog.products.some(
+          existing => existing.id === newProduct.id
+        )
+      );
+
       state.homeCatalog.products =
         state.homeCatalog.offset === 0
-          ? action.payload
-          : [...state.homeCatalog.products, ...action.payload];
+          ? newProducts
+          : [...state.homeCatalog.products, ...uniqueProducts];
+
       state.homeCatalog.canLoadMore = action.payload.length >= 6;
       state.homeCatalog.loading = false;
     },
     fetchHomeCatalogFailure: (state, action) => {
       state.homeCatalog.error = action.payload;
       state.homeCatalog.loading = false;
+    },
+    loadMoreHomeCatalog: (state) => {
+      state.homeCatalog.offset += 6;
+      state.homeCatalog.canLoadMore = true;
     },
     // Для загрузки категорий
     fetchCategoriesStart: (state) => {
@@ -141,11 +162,6 @@ const catalogSlice = createSlice({
     fetchCategoriesFailure: (state, action) => {
       state.error = action.payload;
       state.loading = false;
-    },
-    performSearch: (state) => {
-      state.mainCatalog.offset = 0;
-      state.mainCatalog.products = [];
-      state.mainCatalog.canLoadMore = true;
     },
   },
 });

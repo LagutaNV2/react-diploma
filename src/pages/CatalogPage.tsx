@@ -2,7 +2,6 @@
 import { useEffect, useState, useRef }  from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-// import { useDebounce } from 'use-debounce';
 import type { RootState, AppDispatch } from '../app/store';
 import {
   setSearchQuery,
@@ -14,116 +13,185 @@ import ErrorMessage from '../components/ErrorMessage';
 import Card from '../components/Card';
 import Loader from '../components/Loader';
 import Categories from '../components/Categories';
+import EmptyState from '../components/EmptyState';
 
 // SSR-safe проверка на выполнение в браузере
 const isBrowser = typeof window !== "undefined";
 
+const MIN_LOADER_DISPLAY_TIME = 500;
+
 const CatalogPage = () => {
   const [searchParams] = useSearchParams();
-    const dispatch: AppDispatch = useDispatch();
-    const [localQuery, setLocalQuery] = useState('');
-    const selectedCategory = useSelector((state: RootState) => state.catalog.selectedCategory);
-    // const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-    const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const dispatch: AppDispatch = useDispatch();
+  const [localQuery, setLocalQuery] = useState('');
+  const [loadingMore, setLoadingMore] = useState(false);
+  const selectedCategory = useSelector((state: RootState) => state.catalog.selectedCategory);
 
-    const {
-      products,
-      searchQuery,
-      offset,
-      loading,
-      error,
-      canLoadMore,
-    } = useSelector((state: RootState) => state.catalog.mainCatalog);
+  const loaderTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  const {
+    products,
+    searchQuery,
+    offset,
+    loading,
+    isSearching,
+    error,
+    canLoadMore,
+  } = useSelector((state: RootState) => state.catalog.mainCatalog);
 
-    useEffect(() => {
-      // Синхронизация с URL при загрузке
-      const urlQuery = searchParams.get('q') || '';
-      setLocalQuery(urlQuery);
-      dispatch(setSearchQuery(urlQuery));
-      // dispatch(performSearch());
-    }, [searchParams, dispatch]);
+  const catalogLoading = useSelector((state: RootState) => state.catalog.loading);
+  const isEmptyState = !loading && !isSearching && !error && products.length === 0 && searchQuery;
+  // const isEmptyState = !error && products.length === 0 && searchQuery;
+  console.log('catalogLoading:', isSearching, 'isSearching:', loading, 'error:', error, 'products:', products.length, 'searchQuery:', searchQuery);
 
-    // Обновление локального состояния при изменении в Redux
-    useEffect(() => {
-      setLocalQuery(searchQuery);
-    }, [searchQuery]);
+  useEffect(() => {
+    // Синхронизация с URL при загрузке
+    const urlQuery = searchParams.get('q') || '';
+    setLocalQuery(urlQuery);
+    dispatch(setSearchQuery(urlQuery));
+  }, [searchParams, dispatch]);
 
-    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      const value = e.target.value;
-      setLocalQuery(value);
+  // Обновление локального состояния при изменении в Redux
+  useEffect(() => {
+    setLocalQuery(searchQuery);
+  }, [searchQuery]);
 
-      // SSR-safe очистка таймаута
-      if (isBrowser && timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-
-      // SSR-safe установка таймаута
+  // Очистка таймеров при размонтировании
+  useEffect(() => {
+    return () => {
       if (isBrowser) {
-        timeoutRef.current = setTimeout(() => {
-          dispatch(setSearchQuery(value));
-          dispatch(performSearch());
-        }, 1500);
+        if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
+        if (loaderTimeoutRef.current) clearTimeout(loaderTimeoutRef.current);
       }
     };
+  }, []);
 
-    const handleSearchBlur = () => {
-      // Немедленный поиск при потере фокуса
-      // SSR-safe очистка таймаута
-      if (isBrowser && timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setLocalQuery(value);
+
+    // SSR-safe очистка таймаута
+    if (isBrowser && searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+
+    if (isBrowser) {
+      searchTimeoutRef.current = setTimeout(() => {
+        dispatch(setSearchQuery(value));
+        dispatch(performSearch());
+      }, 1500);
+    }
+  };
+
+  const handleSearchBlur = () => {
+    // SSR-safe очистка таймаута
+    if (isBrowser && searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+    dispatch(setSearchQuery(localQuery));
+    dispatch(performSearch());
+  };
+
+  const handleLoadMore = async () => {
+    if (loadingMore || !canLoadMore) return;
+
+    const startTime = Date.now();
+    setLoadingMore(true);
+
+    try {
+      await dispatch(loadMoreMainCatalog());
+    } finally {
+      const elapsedTime = Date.now() - startTime;
+      const remainingTime = MIN_LOADER_DISPLAY_TIME - elapsedTime;
+
+      if (remainingTime > 0) {
+        loaderTimeoutRef.current = setTimeout(() => {
+          setLoadingMore(false);
+        }, remainingTime);
+      } else {
+          setLoadingMore(false);
       }
-      dispatch(setSearchQuery(localQuery));
-      dispatch(performSearch());
-    };
+    }
+  };
 
-    useEffect(() => {
-      return () => {
-        // Очистка при размонтировании компонента
-        if (isBrowser && timeoutRef.current) {
-          clearTimeout(timeoutRef.current);
-        }
-      };
-    }, []);
+  useEffect(() => {
+    return () => {
+      // Очистка при размонтировании компонента
+      if (isBrowser && searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+    };
+  }, []);
 
   return (
-    <div className="catalog">
-      <Categories
-        // onCategorySelect={(categoryId) => {
-        onCategorySelect={() => {
-          dispatch(performSearch());
-          dispatch(fetchMainCatalogStart())
-        }}
-        // key={Date.now()}
-      />
+    <div className="catalog-page">
+      <div className="container">
+        {!isEmptyState && (
+          <>
+            <Categories
+              onCategorySelect={() => {
+                dispatch(performSearch());
+                dispatch(fetchMainCatalogStart());
+              }}
+            />
 
-      <form className="catalog-search-form form-inline">
-        <input
-            className="form-control"
-            placeholder="Поиск"
-            value={localQuery}
-            onChange={handleSearchChange}
-            onBlur={handleSearchBlur}
-        />
-      </form>
+            <form className="catalog-search-form form-inline mb-4">
+              <input
+                className="form-control"
+                placeholder="Поиск"
+                value={localQuery}
+                onChange={handleSearchChange}
+                onBlur={handleSearchBlur}
+              />
+            </form>
+          </>
+        )}
+        {/* Центральный контейнер для состояний */}
+        <div className="state-container">
+          {/* Показываем лоадер при выполнении поиска */}
+          {(loading || isSearching) && <Loader />}
 
-      <div className="row">
-        {products?.map(product => (
-          <div key={`${product.id}-main`} className="col-4">
-            <Card item={product} />
-          </div>
-        ))}
+          {/* Состояние пустого результата */}
+          {isEmptyState && (
+            <div className="d-flex justify-content-center align-items-center">
+              <EmptyState />
+            </div>
+          )}
+
+          {/* Список товаров */}
+          {products.length > 0 && (
+            <>
+              <div className="row">
+                {products?.map(product => (
+                  <div key={`${product.id}-main`} className="col-4 mb-4">
+                    <Card item={product} />
+                  </div>
+                ))}
+              </div>
+              <div className="text-center mt-4">
+                {loadingMore ? (
+                  <Loader />
+                ) : canLoadMore ? (
+                  <button
+                    className="btn btn-outline-primary"
+                    onClick={handleLoadMore}
+                  >
+                    Загрузить ещё
+                  </button>
+                ) : null}
+              </div>
+            </>
+          )}
+
+          {error && (
+            <ErrorMessage
+              error={error}
+              onRetry={() => dispatch(fetchMainCatalogStart())}
+            />
+          )}
+        </div>
       </div>
-      {canLoadMore && (
-        <button
-          className="btn btn-outline-primary"
-          onClick={() => dispatch(loadMoreMainCatalog())}
-          disabled={loading}
-        >
-          {loading ? <Loader /> : 'Загрузить ещё'}
-        </button>
-      )}
-      {error && <ErrorMessage error={error} />}
     </div>
   );
 };

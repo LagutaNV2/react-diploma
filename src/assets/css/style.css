@@ -3,6 +3,8 @@
 @import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&subset=cyrillic-ext');
 @import url('https://fonts.googleapis.com/css?family=Roboto+Condensed&subset=cyrillic-ext');
 
+@import '@fortawesome/fontawesome-free/css/all.css';
+
 body {
   font-family: 'Roboto', sans-serif;
 }
@@ -233,7 +235,7 @@ input:focus {
   outline: none;
   box-shadow: none;
 }
-/* Изображения */
+/* Карточки товара*/
 .card {
   display: flex;
   flex-direction: column;
@@ -250,6 +252,15 @@ input:focus {
 .card-text {
   flex-grow: 1;
 }
+.card-title {
+  min-height: 3em; /* 3em- 2 строки, 4.5em - 3 строки */
+  line-height: 1.5em;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 4; /* максимум 4 строки */
+  -webkit-box-orient: vertical;
+}
+
 .image-box {
   flex-grow: 1;
   /* height: 350px; */
@@ -275,12 +286,14 @@ input:focus {
 
 .card-text {
   flex-grow: 1;
+  font-weight: 700;
 }
 
 /* хит продаж */
 .row {
   display: flex;
   flex-wrap: wrap;
+  margin-bottom: 10px;
 }
 
 .col-12, .col-md-6, .col-lg-4 {
@@ -371,7 +384,11 @@ input:focus {
 
 
 /* Bootstrap */
-.nav-link.active {
+.nav-link.category:hover {
+  font-size: 1.7rem;
+}
+
+.nav-link.category.active {
   color: #ff0000;
 }
 
@@ -424,4 +441,35 @@ h2, .h2 {
 
 .btn-close {
   filter: invert(1);
+}
+
+button[disabled] {
+  cursor: not-allowed;
+}
+
+/* Общие стили для всех страниц */
+.catalog-page, .success-page {
+  min-height: calc(100vh - 150px); /* Учитываем высоту хедера/футера */
+  padding: 40px 0;
+}
+
+.state-container {
+  min-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Адаптивные стили */
+@media (max-width: 768px) {
+  .catalog-page, .success-page {
+    padding: 20px 0;
+  }
+
+  .state-container {
+    min-height: 50vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
 }
