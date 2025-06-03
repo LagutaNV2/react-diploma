@@ -7,8 +7,8 @@ import ContactsPage from '../pages/ContactsPage'
 import NotFoundPage from '../pages/NotFoundPage'
 import ProductPage from '../pages/ProductPage'
 import CartPage from '../pages/CartPage';
-import SuccessPage from '../components/SuccessPage';
-// import OrderGuard from '../components/OrderGuard';
+import SuccessPage from '../pages/SuccessPage';
+
 
 const AppRouter = () => {
   return (

@@ -1,5 +1,6 @@
 //src/features/cart/cartSagas.ts
-import { takeLatest, call, put } from 'redux-saga/effects';
+import { takeLatest, put } from 'redux-saga/effects';
+
 function* saveToLocalStorage() {
   yield put({ type: 'LOCAL_STORAGE_UPDATED' });
 }

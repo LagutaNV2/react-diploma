@@ -5,13 +5,12 @@ import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import type { RootState } from '../app/store';
 import {
-  fetchProductFailure,
   fetchProductStart,
-  fetchProductSuccess,
   resetProductState,
   setSize,
 } from '../features/product/productSlice';
 import { addToCart } from '../features/cart/cartSlice';
+
 import ErrorMessage from '../components/ErrorMessage';
 import Loader from '../components/Loader';
 
@@ -19,7 +18,7 @@ const ProductPage = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { product, loading, error, selectedSize, quantity } = useSelector(
+  const { product, loading, error, selectedSize } = useSelector(
     (state: RootState) => state.product
   );
   const [localQuantity, setLocalQuantity] = useState(1);

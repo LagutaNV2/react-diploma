@@ -1,10 +1,10 @@
 // src/components/Header.tsx
 import { useState, useRef, useEffect } from 'react';
 import { NavLink, useNavigate, useSearchParams, useLocation } from 'react-router-dom';
-import type { RootState } from '../app/store';
-import CartIcon from './CartIcon';
 import { useDispatch, useSelector } from 'react-redux';
+import type { RootState } from '../app/store';
 import { setSearchQuery, performSearch } from '../features/catalog/catalogSlice';
+import CartIcon from './CartIcon';
 
 // SSR-safe проверка на выполнение в браузере
 const isBrowser = typeof window !== "undefined";

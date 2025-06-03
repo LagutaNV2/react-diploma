@@ -2,18 +2,18 @@
 import { useSelector, useDispatch } from 'react-redux';
 import { useEffect } from 'react';
 import type { RootState } from '../app/store';
+import { fetchTopSalesStart } from '../features/topSales/topSalesSlice';
+import {
+  selectCategory,
+  fetchCategoriesStart,
+  fetchHomeCatalogStart
+} from '../features/catalog/catalogSlice';
+
 import Loader from '../components/Loader';
 import TopSales from '../components/TopSales';
 import Categories from '../components/Categories';
 import ErrorMessage from '../components/ErrorMessage';
 import HomePageCatalog from '../components/HomePageCatalog';
-import {
-  selectCategory,
-  fetchCategoriesSuccess,
-  fetchCategoriesStart,
-  fetchHomeCatalogStart
-} from '../features/catalog/catalogSlice';
-import { fetchTopSalesStart } from '../features/topSales/topSalesSlice';
 
 
 

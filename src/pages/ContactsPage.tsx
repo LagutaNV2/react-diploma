@@ -1,5 +1,4 @@
 // src/pages/ContactsPage.tsx
-
 const ContactsPage = () => {
   return (
     <section className="top-sales">

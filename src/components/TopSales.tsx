@@ -1,8 +1,8 @@
 // src/components/TopSales.tsx
 import { useEffect} from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { fetchTopSalesStart } from '../features/topSales/topSalesSlice';
 import type { RootState } from '../app/store';
+import { fetchTopSalesStart } from '../features/topSales/topSalesSlice';
 import Loader from './Loader';
 import ErrorMessage from './ErrorMessage';
 import Card from './Card';

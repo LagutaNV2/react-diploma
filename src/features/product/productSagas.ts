@@ -1,5 +1,5 @@
 //src/features/product/productSagas.ts
-import { call, put, takeLatest, select } from 'redux-saga/effects';
+import { call, put, takeLatest } from 'redux-saga/effects';
 import { fetchProductStart, fetchProductSuccess, fetchProductFailure } from './productSlice';
 import type { Product } from './types';
 
@@ -10,7 +10,7 @@ function* fetchProductSaga(action) {
     const data: Product = yield call([res, 'json']);
     yield put(fetchProductSuccess(data));
   } catch (e) {
-    yield put(fetchProductFailure('Ошибка загрузки товара'));
+    yield put(fetchProductFailure('Ошибка загрузки товара', e.message));
   }
 }
 

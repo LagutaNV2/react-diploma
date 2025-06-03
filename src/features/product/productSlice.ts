@@ -35,12 +35,16 @@ const productSlice = createSlice({
     fetchProductStart: (state) => {
       state.loading = true;
       state.error = null;
+      state.product = null;
+      state.selectedSize = null;
     },
     fetchProductSuccess: (state, action) => {
+      console.log('!!!fetchProductSuccess action payload:', action.payload);
       state.product = action.payload;
       state.loading = false;
     },
     fetchProductFailure: (state, action) => {
+      console.error('!!!fetchProductFailure action payload:', action.payload);
       state.error = action.payload;
       state.loading = false;
     },

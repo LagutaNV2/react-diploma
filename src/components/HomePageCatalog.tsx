@@ -2,11 +2,10 @@
 import { useEffect, useState, useRef  } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import type { RootState } from '../app/store';
-import { fetchHomeCatalogStart } from '../features/catalog/catalogSlice';
+import { fetchHomeCatalogStart, loadMoreHomeCatalog } from '../features/catalog/catalogSlice';
 import Card from './Card';
 import Loader from './Loader';
 import ErrorMessage from './ErrorMessage';
-import { loadMoreHomeCatalog } from '../features/catalog/catalogSlice';
 
 const MIN_LOADER_DISPLAY_TIME = 500;
 
@@ -70,7 +69,6 @@ const HomePageCatalog = () => {
         ))}
       </div>
       <div className="text-center">
-        {console.log('render Загрузить ещё: loading=', loading, 'loadingMore=', loadingMore)}
         {loadingMore ? (
           <Loader />
         ) : canLoadMore ? (

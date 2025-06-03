@@ -1,5 +1,5 @@
 // src/components/SuccessPage.tsx
-import SuccessState from './SuccessState';
+import SuccessState from '../components/SuccessState';
 
 console.log('SuccessPage component rendered');
 const SuccessPage = () => (

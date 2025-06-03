@@ -5,7 +5,9 @@ import type { Product } from '../features/product/types';
 type Props = {
   item: Product
 }
+
 const Card = ({ item }: Props) => {
+  console.log('Card component loaded with item:', item);
   return (
     <div className="card">
         <div className="image-box">

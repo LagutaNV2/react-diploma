@@ -116,8 +116,9 @@ const CartPage = () => {
         try {
           const errorData = await response.json();
           errorMessage = errorData.message || errorMessage;
-        } catch (e) {
+        } catch (error) {
           // Если не удалось распарсить JSON
+          console.error('Ошибка при обработке ответа сервера:', error);
           errorMessage = await response.text() || errorMessage;
         }
         throw new Error(errorMessage);

@@ -2,7 +2,6 @@
 import { all, fork, call } from 'redux-saga/effects';
 import { watchFetchTopSales } from '../features/topSales/topSalesSagas';
 import {
-  // watchCatalog,
   watchMainCatalog,
   watchHomeCatalog,
   watchCategories
@@ -13,12 +12,6 @@ import { watchCartChanges } from '../features/cart/cartSagas';
 
 export default function* rootSaga() {
   yield all([
-    // watchFetchTopSales(),
-    // watchHomeCatalog(),
-    // watchMainCatalog(),
-    // watchCategories(),
-    // watchFetchProductDetails(),
-    // watchCartChanges()
     // Первыми загружаем категории
     call(watchCategories),
 

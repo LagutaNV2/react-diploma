@@ -25,7 +25,6 @@ const CatalogPage = () => {
   const dispatch: AppDispatch = useDispatch();
   const [localQuery, setLocalQuery] = useState('');
   const [loadingMore, setLoadingMore] = useState(false);
-  const selectedCategory = useSelector((state: RootState) => state.catalog.selectedCategory);
 
   const loaderTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -33,16 +32,16 @@ const CatalogPage = () => {
   const {
     products,
     searchQuery,
-    offset,
+    // offset,
     loading,
     isSearching,
     error,
     canLoadMore,
   } = useSelector((state: RootState) => state.catalog.mainCatalog);
 
-  const catalogLoading = useSelector((state: RootState) => state.catalog.loading);
+  // const catalogLoading = useSelector((state: RootState) => state.catalog.loading);
   const isEmptyState = !loading && !isSearching && !error && products.length === 0 && searchQuery;
-  // const isEmptyState = !error && products.length === 0 && searchQuery;
+
   console.log('catalogLoading:', isSearching, 'isSearching:', loading, 'error:', error, 'products:', products.length, 'searchQuery:', searchQuery);
 
   useEffect(() => {

@@ -1,11 +1,9 @@
 //src/features/catalog/catalogSagas.ts
 import { call, put, select, takeLatest, debounce } from 'redux-saga/effects';
 import {
-  selectCategory as selectCategoryAction,
   setSearchQuery as setSearchQueryAction,
   loadMoreMainCatalog,
   loadMoreHomeCatalog,
-  fetchMainCatalogStart,
   fetchMainCatalogSuccess,
   fetchMainCatalogFailure,
   fetchCategoriesSuccess,
@@ -15,9 +13,6 @@ import {
   fetchHomeCatalogFailure,
   fetchCategoriesStart,
   performSearch,
-  // initCatalog,
-  // initCatalogSuccess,
-  // initCatalogFailure
 } from './catalogSlice';
 import type { Product } from '../product/types';
 
@@ -25,9 +20,8 @@ import type { Product } from '../product/types';
 function* fetchMainCatalogSaga() {
   try {
     const state = yield select(state => state.catalog);
-    const { isSearching } = state.mainCatalog;
     const { selectedCategory } = state;
-    const { searchQuery, offset } = state.mainCatalog;
+    const { searchQuery } = state.mainCatalog;
     const actualOffset = yield select(
       state => state.catalog.mainCatalog.offset
     );
@@ -38,11 +32,11 @@ function* fetchMainCatalogSaga() {
     });
 
     const res = yield call(fetch, `http://localhost:7070/api/items?${params}`);
-    console.log('Response status:', res.status);
+
     if (!res.ok)   throw new Error(`HTTP error! status: ${res.status}`);
-    console.log('Response received:', res);
+
     const data: Product[] = yield call([res, 'json']);
-    console.log('Data received:', data);
+
     yield put(fetchMainCatalogSuccess(data));
   } catch (e) {
     console.error('Error fetching main catalog:', e);
@@ -57,8 +51,6 @@ function* fetchHomeCatalogSaga() {
     const { offset } = state.homeCatalog;
 
     const params = new URLSearchParams({
-      // offset: state.homeCatalog.offset.toString(),
-      // ...(state.selectedCategory !== 0 && { categoryId: state.selectedCategory.toString() })
       offset: offset.toString(),
       ...(state.selectedCategory !== 0 && {
         categoryId: state.selectedCategory.toString()
@@ -81,7 +73,6 @@ function* fetchHomeCatalogSaga() {
 }
 
 function* fetchCategoriesSaga() {
-  console.log('fetchCategoriesSaga started');
   try {
     const res: Response = yield call(fetch, 'http://localhost:7070/api/categories');
 
@@ -89,8 +80,7 @@ function* fetchCategoriesSaga() {
 
     const data: Category[] = yield res.json();
     yield put(fetchCategoriesSuccess([{ id: 0, title: 'Все' }, ...data]));
-    // yield put(fetchHomeCatalogStart());
-    console.log('Categories fetched successfully:', data);
+
   } catch (e) {
     const errorMessage = e instanceof Error ? e.message : 'Unknown error';
     console.error('Error fetching categories:', errorMessage);

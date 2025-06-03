@@ -1,5 +1,4 @@
 // src/pages/AboutPage.tsx
-
 const AboutPage = () => {
   return (
     <section className="top-sales">
