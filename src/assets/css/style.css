@@ -1,9 +1,8 @@
 /* src/assets/css/style.css */
-
 @import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&subset=cyrillic-ext');
 @import url('https://fonts.googleapis.com/css?family=Roboto+Condensed&subset=cyrillic-ext');
 
-@import '@fortawesome/fontawesome-free/css/all.css';
+/* @import '@fortawesome/fontawesome-free/css/all.css'; */
 
 body {
   font-family: 'Roboto', sans-serif;
@@ -48,7 +47,8 @@ input:focus {
   height: 32px;
   width: 32px;
   margin: 0 10px;
-  background-image: url(../img/header-controls-sprite.png);
+  /* background-image: url(../img/header-controls-sprite.png); */
+  background-image: url(/img/header-controls-sprite.png);
   background-repeat: no-repeat;
   cursor: pointer;
 }
@@ -189,7 +189,6 @@ input:focus {
 /* Top Sales */
 .top-sales {
   width: 100%;
-
 }
 
 /* Catalog */
@@ -263,7 +262,6 @@ input:focus {
 
 .image-box {
   flex-grow: 1;
-  /* height: 350px; */
   height: 200px;
   display: flex;
   justify-content: center;
@@ -318,7 +316,8 @@ input:focus {
   border-radius: 8px;
   background-color: #FFFFFF;
   background-repeat: no-repeat;
-  background-image: url(../img/footer-sprite.png);
+  /* background-image: url(../img/footer-sprite.png); */
+  background-image: url(/img/footer-sprite.png);
 }
 .footer-pay-systems:not(:first-child) {
   margin-left: 5px;
