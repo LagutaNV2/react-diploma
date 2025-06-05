@@ -3,7 +3,7 @@ import { createSlice } from '@reduxjs/toolkit';
 import type { Category } from './types';
 import type { Product } from '../product/types';
 
-interface CatalogState {
+export interface CatalogState {
   categories: Category[];
   loading: boolean;
   error: string | null;
@@ -128,7 +128,7 @@ const catalogSlice = createSlice({
 
       // Фильтрация дубликатов
       const uniqueProducts = newProducts.filter(
-        newProduct => !state.homeCatalog.products.some(
+        (newProduct: Product) => !state.homeCatalog.products.some(
           existing => existing.id === newProduct.id
         )
       );

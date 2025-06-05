@@ -18,7 +18,7 @@ export interface Product {
   }[]
 }
 
-// export type TopSaleItem = Pick<Product, 'id' | 'title' | 'price' | 'images'>
+export type TopSaleItem = Pick<Product, 'id' | 'title' | 'price' | 'images'>
 
 export interface CartItem {
   id: number

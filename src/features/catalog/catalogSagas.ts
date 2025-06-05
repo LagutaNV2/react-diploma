@@ -15,9 +15,11 @@ import {
   performSearch,
 } from './catalogSlice';
 import type { Product } from '../product/types';
+import type { CatalogState } from './catalogSlice';
+import type { Category } from './types';
 
 // Сага для основного каталога
-function* fetchMainCatalogSaga() {
+function* fetchMainCatalogSaga(): Generator<any, void, any> {
   try {
     const state = yield select(state => state.catalog);
     const { selectedCategory } = state;
@@ -39,13 +41,13 @@ function* fetchMainCatalogSaga() {
 
     yield put(fetchMainCatalogSuccess(data));
   } catch (e) {
-    console.error('Error fetching main catalog:', e);
-    yield put(fetchMainCatalogFailure(e.message));
+    const error = e as Error;
+    yield put(fetchMainCatalogFailure(error.message));
   }
 }
 
 // Сага для виджета на главной
-function* fetchHomeCatalogSaga() {
+function* fetchHomeCatalogSaga(): Generator<any, void, any> {
   try {
     const state: CatalogState = yield select(state => state.catalog);
     const { offset } = state.homeCatalog;
@@ -72,7 +74,7 @@ function* fetchHomeCatalogSaga() {
   }
 }
 
-function* fetchCategoriesSaga() {
+function* fetchCategoriesSaga(): Generator<any, void, any> {
   try {
     const res: Response = yield call(fetch, 'http://localhost:7070/api/categories');
 

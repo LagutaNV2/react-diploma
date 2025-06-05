@@ -1,5 +1,5 @@
 // src/app/rootSaga.ts
-import { all, fork, call } from 'redux-saga/effects';
+import { all, fork, call } from 'redux-saga/effects'; // '"redux-saga/effects"' has no exported member named 'all'. Did you mean 'call'
 import { watchFetchTopSales } from '../features/topSales/topSalesSagas';
 import {
   watchMainCatalog,

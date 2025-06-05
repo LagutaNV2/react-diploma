@@ -6,9 +6,15 @@ import { fetchTopSalesStart } from '../features/topSales/topSalesSlice';
 import Loader from './Loader';
 import ErrorMessage from './ErrorMessage';
 import Card from './Card';
+import type { Product } from '../features/product/types';
 
 const TopSales = () => {
-  const { items, status, error } = useSelector((state: RootState) => state.topSales);
+  const { items, status, error } = useSelector((state: RootState) => ({
+    items: state.topSales.items as Product[],
+    status: state.topSales.status,
+    error: state.topSales.error
+  }));
+  
   const dispatch = useDispatch();
 
   useEffect(() => {

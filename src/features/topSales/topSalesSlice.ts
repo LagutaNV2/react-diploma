@@ -6,12 +6,14 @@ import type { TopSaleItem } from '../product/types';
 type TopSalesState = {
   items: TopSaleItem[];
   loading: boolean;
+  status?: 'idle' | 'loading' | 'succeeded' | 'failed';
   error: string | null;
 };
 
 const initialState: TopSalesState = {
   items: [],
   loading: false,
+  status: 'idle',
   error: null,
 };
 

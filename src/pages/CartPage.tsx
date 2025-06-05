@@ -138,6 +138,7 @@ const CartPage = () => {
         }, 3000);
       }
     } catch (error) {
+      const err = error as Error;
       let message = 'Ошибка сети';
       if (error instanceof TypeError) {
         message = 'Проверьте подключение к интернету';
@@ -146,7 +147,7 @@ const CartPage = () => {
       }
 
       // Доп. специфичная обработка для CORS ошибок
-      if (error.message.includes('Failed to fetch') || error.message.includes('network')) {
+      if (err.message.includes('Failed to fetch') || err.message.includes('network')) {
         message = 'Ошибка CORS: Проверьте настройки сервера';
       }
 
