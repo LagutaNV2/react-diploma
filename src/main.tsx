@@ -11,7 +11,8 @@ import ErrorBoundary from './components/ErrorBoundary'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <BrowserRouter>
+    {/* <BrowserRouter> */}
+    <BrowserRouter basename="/react-diploma">
       <ErrorBoundary>
         <App />
       </ErrorBoundary>
