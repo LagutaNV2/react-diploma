@@ -86,7 +86,7 @@ function* fetchCategoriesSaga(): SagaIterator {
 
     if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
 
-    const data: Category[] = yield res.json();
+    const data: Category[] = yield call([res, 'json']);
     yield put(fetchCategoriesSuccess([{ id: 0, title: 'Все' }, ...data]));
 
   } catch (e) {
