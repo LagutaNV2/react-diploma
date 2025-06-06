@@ -1,5 +1,6 @@
-//src/features/catalog/catalogSagas.ts
+// src/features/catalog/catalogSagas.ts
 import { call, put, select, takeLatest, debounce } from 'redux-saga/effects';
+import type { SagaIterator } from 'redux-saga';
 import {
   setSearchQuery as setSearchQueryAction,
   loadMoreMainCatalog,
@@ -18,8 +19,10 @@ import type { Product } from '../product/types';
 import type { CatalogState } from './catalogSlice';
 import type { Category } from './types';
 
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL
+
 // Сага для основного каталога
-function* fetchMainCatalogSaga(): Generator<any, void, any> {
+function* fetchMainCatalogSaga(): SagaIterator {
   try {
     const state = yield select(state => state.catalog);
     const { selectedCategory } = state;
@@ -33,7 +36,8 @@ function* fetchMainCatalogSaga(): Generator<any, void, any> {
       ...(searchQuery && { q: searchQuery })
     });
 
-    const res = yield call(fetch, `http://localhost:7070/api/items?${params}`);
+    // const res = yield call(fetch, `http://localhost:7070/api/items?${params}`);
+    const res = yield call(fetch, `${apiBaseUrl}/items?${params}`);
 
     if (!res.ok)   throw new Error(`HTTP error! status: ${res.status}`);
 
@@ -47,7 +51,7 @@ function* fetchMainCatalogSaga(): Generator<any, void, any> {
 }
 
 // Сага для виджета на главной
-function* fetchHomeCatalogSaga(): Generator<any, void, any> {
+function* fetchHomeCatalogSaga(): SagaIterator {
   try {
     const state: CatalogState = yield select(state => state.catalog);
     const { offset } = state.homeCatalog;
@@ -61,7 +65,8 @@ function* fetchHomeCatalogSaga(): Generator<any, void, any> {
 
     const res: Response = yield call(
       fetch,
-      `http://localhost:7070/api/items?${params}`
+      // `http://localhost:7070/api/items?${params}`
+      `${apiBaseUrl}/items?${params}`
     );
 
     if (!res.ok) throw new Error('Ошибка загрузки каталога');
@@ -74,9 +79,10 @@ function* fetchHomeCatalogSaga(): Generator<any, void, any> {
   }
 }
 
-function* fetchCategoriesSaga(): Generator<any, void, any> {
+function* fetchCategoriesSaga(): SagaIterator {
   try {
-    const res: Response = yield call(fetch, 'http://localhost:7070/api/categories');
+    // const res: Response = yield call(fetch, 'http://localhost:7070/api/categories');
+    const res: Response = yield call(fetch, `${apiBaseUrl}/categories`);
 
     if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
 

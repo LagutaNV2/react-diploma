@@ -96,7 +96,9 @@ const CartPage = () => {
           count: item.quantity
         }))
       };
-      const response = await fetch('http://localhost:7070/api/order', {
+      // const response = await fetch('http://localhost:7070/api/order', {
+      const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
+      const response = await fetch(`${apiBaseUrl}/order`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(orderData)
@@ -126,7 +128,6 @@ const CartPage = () => {
 
       dispatch(clearCart());
       localStorage.removeItem('cartItems');
-      // navigate('/success');
       showNotification('success', 'Заказ успешно оформлен!');
 
       if (isBrowser && timeoutRef.current) {

@@ -9,7 +9,9 @@ import type { TopSaleItem } from '../product/types';
 
 export default function* fetchTopSalesSaga() {
   try {
-    const response: Response = yield call(fetch, 'http://localhost:7070/api/top-sales');
+    // const response: Response = yield call(fetch, 'http://localhost:7070/api/top-sales');
+    const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
+    const response: Response = yield call(fetch, `${apiBaseUrl}/top-sales`);
 
     if (!response.ok) {
       const errorData: { message?: string } = yield response.json();

@@ -1,19 +1,34 @@
-import { defineConfig } from 'vite'
+// vite.config.ts
+import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 
-// https://vite.dev/config/
-export default defineConfig({
-  plugins: [react()],
-  base: '/react-diploma/', //github.com/LagutaNV2/react-diploma
-  build: {
-    outDir: 'dist',
-    assetsDir: 'assets',
-    sourcemap: true,
-  },
-  css: {
-    devSourcemap: true,
-    modules: {
-      localsConvention: 'camelCaseOnly',
+export default defineConfig(({ mode }) => {
+  // Загружаем переменные окружения
+  const env = loadEnv(mode, process.cwd(), '')
+
+  // Динамически определяем base URL
+  const base = env.VITE_BASE_URL || '/'
+  // base: process.env.CI && '/react-diploma/',
+
+  return {
+    plugins: [react()],
+    base,
+    build: {
+      outDir: 'dist',
+      assetsDir: 'assets',
+      sourcemap: true,
     },
-  },
+    css: {
+      devSourcemap: true,
+    },
+    // Для локальной разработки с проксированием API
+    server: {
+      proxy: {
+        '/api': {
+          target: 'http://localhost:7070',
+          changeOrigin: true,
+        }
+      }
+    }
+  }
 })

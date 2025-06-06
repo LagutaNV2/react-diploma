@@ -1,6 +1,6 @@
 // src/features/product/productSlice.ts
 import { createSlice, } from '@reduxjs/toolkit';
-import type { PayloadAction } from '@reduxjs/toolkit';
+//import type { PayloadAction } from '@reduxjs/toolkit';
 import type { Product } from './types';
 
 interface ProductState {
@@ -33,7 +33,8 @@ const productSlice = createSlice({
       if (state.quantity > 1) state.quantity -= 1;
     },
     resetProductState: () => initialState,
-    fetchProductStart: (state, _action: PayloadAction<{ id: number }>) => {
+    // fetchProductStart: (state, _action: PayloadAction<{ id: number }>) => {
+    fetchProductStart: (state) => {
       state.loading = true;
       state.error = null;
       state.product = null;

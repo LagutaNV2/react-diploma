@@ -26,7 +26,7 @@ const Header = () => {
     const urlQuery = searchParams.get('q') || '';
     setLocalQuery(urlQuery);
     dispatch(setSearchQuery(urlQuery));
-  }, [searchParams]);
+  }, [searchParams, dispatch]);
 
   // Синхронизация при изменении Redux state
   useEffect(() => {
@@ -41,7 +41,7 @@ const Header = () => {
         timeoutRef.current = null;
       }
     };
-  }, []);
+  }, [dispatch]);
 
 
   const triggerSearchNavigation = (currentQuery: string) => {
@@ -101,7 +101,8 @@ const Header = () => {
           <nav className="navbar navbar-expand-sm navbar-light bg-light">
             {/* Логотип */}
             <NavLink to="/" className="navbar-brand">
-              <img src="/src/assets/img/header-logo.png" alt="Bosa Noga" />
+              {/* <img src="/src/assets/img/header-logo.png" alt="Bosa Noga" /> */}
+              <img src="/img/header-logo.png" alt="Bosa Noga" />
             </NavLink>
 
             {/* Навигационное меню */}
