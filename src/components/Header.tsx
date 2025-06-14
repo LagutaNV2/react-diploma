@@ -102,7 +102,7 @@ const Header = () => {
             {/* Логотип */}
             <NavLink to="/" className="navbar-brand">
               {/* <img src="/src/assets/img/header-logo.png" alt="Bosa Noga" /> */}
-              <img src="/img/header-logo.png" alt="Bosa Noga" />
+              <img src="img/header-logo.png" alt="Bosa Noga" />
             </NavLink>
 
             {/* Навигационное меню */}

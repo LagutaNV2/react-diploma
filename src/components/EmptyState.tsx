@@ -1,7 +1,7 @@
 // src/components/EmptyState.tsx
 import { Link } from 'react-router-dom';
 
-console.log('-----------EmptyState component rendered-------');
+// console.log('-----------EmptyState component rendered-------');
 const EmptyState = () => (
   <div className="empty-state">
     <div className="text-center py-5">

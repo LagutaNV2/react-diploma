@@ -5,7 +5,7 @@ import type { RootState } from '../app/store';
 
 const CartIcon = () => {
   const itemCount = useSelector((state: RootState) => state.cart.items.length)
-  console.log('<<<< CartIcon component rendered >>>>>');
+  // console.log('<<<< CartIcon component rendered >>>>>');
   return (
     <Link to="/cart"  className="header-controls-pic header-controls-cart">
       {/* Индикатор количества товаров */}

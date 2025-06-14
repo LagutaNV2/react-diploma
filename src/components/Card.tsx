@@ -7,7 +7,7 @@ type Props = {
 }
 
 const Card = ({ item }: Props) => {
-  console.log('Card component loaded with item:', item);
+  // console.log('Card component loaded with item:', item);
   return (
     <div className="card">
         <div className="image-box">

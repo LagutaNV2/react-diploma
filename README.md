@@ -1,7 +1,10 @@
 # Дипломный проект курса «React»
 
-Backend для RA16-Diploma
+Backend для RA16-Diploma:
+Локальный сервер
 # https://github.com/LagutaNV2/react_diploma-backend
+Опубликованный сервер
+# https://ra16-diploma-1.onrender.com
 
 link:
 # https://lagutanv2.github.io/react-diploma/
